@@ -1,0 +1,108 @@
+[
+  {
+    "type": "function",
+    "name": "computePKH",
+    "inputs": [
+      {
+        "name": "pub",
+        "type": "bytes32[2][256]",
+        "internalType": "bytes32[2][256]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "pkh",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "verify",
+    "inputs": [
+      {
+        "name": "bits",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "sig",
+        "type": "bytes32[256]",
+        "internalType": "bytes32[256]"
+      },
+      {
+        "name": "pub",
+        "type": "bytes32[2][256]",
+        "internalType": "bytes32[2][256]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "valid",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "verifyConstantTime",
+    "inputs": [
+      {
+        "name": "bits",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "sig",
+        "type": "bytes32[256]",
+        "internalType": "bytes32[256]"
+      },
+      {
+        "name": "pub",
+        "type": "bytes32[2][256]",
+        "internalType": "bytes32[2][256]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "valid",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "verifyUnrolled",
+    "inputs": [
+      {
+        "name": "bits",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "sig",
+        "type": "bytes32[256]",
+        "internalType": "bytes32[256]"
+      },
+      {
+        "name": "pub",
+        "type": "bytes32[2][256]",
+        "internalType": "bytes32[2][256]"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "valid",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "pure"
+  }
+]
