@@ -171,7 +171,7 @@ aside[role="complementary"] {
 }
 
 /* Hide duplicate sidebar header (logo shown in top nav) */
-aside[role="complementary"] > div > div:first-child {
+aside > div > div:first-child {
   display: none !important;
 }
 
