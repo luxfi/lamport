@@ -67,9 +67,16 @@ contract LamportTest {
     /// @notice Verify a signature (uint256 bits format)
     /// @param bits The message as uint256
     /// @param sig Array of 256 bytes preimages
-    function verifyBits(uint256 bits, bytes[256] calldata sig) external view returns (bool) {
+    /// @param pub The public key (must match stored pubKey)
+    function verifyBits(
+        uint256 bits,
+        bytes[256] calldata sig,
+        bytes32[2][256] calldata pub
+    ) external view returns (bool) {
         if (!pubKeySet) revert PublicKeyNotSet();
-        return LamportLib.verify_u256(bits, sig, pubKey);
+        // Verify provided pubKey matches stored (gas optimization: caller provides calldata)
+        require(LamportLib.computePKH(pubKey) == keccak256(abi.encodePacked(pub)), "PKH mismatch");
+        return LamportLib.verify_u256(bits, sig, pub);
     }
 
     /// @notice Get the PKH of the stored public key
