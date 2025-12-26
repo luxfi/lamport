@@ -205,11 +205,16 @@ contract LamportThreshold {
 /// @dev For threshold setups, keys are pre-generated and registered
 contract LamportKeyChain {
     // =========================================================================
-    // Constants
+    // Configuration
     // =========================================================================
 
     /// @notice Maximum keys per chain (prevents gas griefing)
-    uint256 public constant MAX_CHAIN_SIZE = 1000;
+    /// @dev Configurable at deploy. Practical limits:
+    ///      - 100 keys ≈ 2M gas
+    ///      - 256 keys ≈ 5M gas (recommended default)
+    ///      - 512 keys ≈ 10M gas
+    ///      - 1000 keys ≈ 20M gas (near block limit)
+    uint256 public immutable maxChainSize;
 
     // =========================================================================
     // Types
@@ -253,13 +258,24 @@ contract LamportKeyChain {
     error ChainTooLarge();
 
     // =========================================================================
+    // Constructor
+    // =========================================================================
+
+    /// @notice Deploy with configurable max chain size
+    /// @param _maxChainSize Maximum keys per chain (recommend 256)
+    constructor(uint256 _maxChainSize) {
+        require(_maxChainSize > 0 && _maxChainSize <= 1000, "Invalid max size");
+        maxChainSize = _maxChainSize;
+    }
+
+    // =========================================================================
     // Registration
     // =========================================================================
 
     /// @notice Register a new key chain
     function registerKeyChain(bytes32[] calldata pkhs) external returns (bytes32 chainId) {
         if (pkhs.length == 0) revert EmptyKeyArray();
-        if (pkhs.length > MAX_CHAIN_SIZE) revert ChainTooLarge();
+        if (pkhs.length > maxChainSize) revert ChainTooLarge();
 
         for (uint256 i = 0; i < pkhs.length; i++) {
             if (pkhs[i] == bytes32(0)) revert InvalidPKH();
