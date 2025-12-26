@@ -7,16 +7,16 @@
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./abis": {
+      "types": "./abis/index.d.ts",
       "import": "./abis/index.mjs",
-      "require": "./abis/index.js",
-      "types": "./abis/index.d.ts"
+      "require": "./abis/index.js"
     },
-    "./contracts": "./contracts/index.sol"
+    "./contracts/*": "./contracts/*"
   },
   "files": [
     "dist",
