@@ -22,12 +22,14 @@ contract LamportOptimized {
     /// @param sig Array of 256 bytes32 preimages
     /// @param pub 256x2 array of public key hashes
     /// @return valid True if signature is valid
-    function verify(
-        uint256 bits,
-        bytes32[256] calldata sig,
-        bytes32[2][256] calldata pub
-    ) external pure returns (bool valid) {
-        bits; sig; pub;
+    function verify(uint256 bits, bytes32[256] calldata sig, bytes32[2][256] calldata pub)
+        external
+        pure
+        returns (bool valid)
+    {
+        bits;
+        sig;
+        pub;
         assembly ("memory-safe") {
             let memPtr := mload(0x40)
             let bitsVal := calldataload(0x04)
@@ -57,12 +59,14 @@ contract LamportOptimized {
     /// @param sig Array of 256 bytes32 preimages
     /// @param pub 256x2 array of public key hashes
     /// @return valid True if signature is valid
-    function verifyUnrolled(
-        uint256 bits,
-        bytes32[256] calldata sig,
-        bytes32[2][256] calldata pub
-    ) external pure returns (bool valid) {
-        bits; sig; pub;
+    function verifyUnrolled(uint256 bits, bytes32[256] calldata sig, bytes32[2][256] calldata pub)
+        external
+        pure
+        returns (bool valid)
+    {
+        bits;
+        sig;
+        pub;
         assembly ("memory-safe") {
             let memPtr := mload(0x40)
             let bitsVal := calldataload(0x04)
@@ -74,7 +78,12 @@ contract LamportOptimized {
                     let bitPos := sub(255, i)
                     let bit := and(shr(bitPos, bitsVal), 1)
                     mstore(memPtr, calldataload(add(0x24, mul(i, 32))))
-                    if iszero(eq(keccak256(memPtr, 32), calldataload(add(0x2024, add(mul(i, 64), mul(bit, 32)))))) {
+                    if iszero(
+                        eq(
+                            keccak256(memPtr, 32),
+                            calldataload(add(0x2024, add(mul(i, 64), mul(bit, 32))))
+                        )
+                    ) {
                         valid := 0
                         break
                     }
@@ -84,7 +93,12 @@ contract LamportOptimized {
                     let j := add(i, 1)
                     let bit := and(shr(sub(255, j), bitsVal), 1)
                     mstore(memPtr, calldataload(add(0x24, mul(j, 32))))
-                    if iszero(eq(keccak256(memPtr, 32), calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32)))))) {
+                    if iszero(
+                        eq(
+                            keccak256(memPtr, 32),
+                            calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32))))
+                        )
+                    ) {
                         valid := 0
                         break
                     }
@@ -94,7 +108,12 @@ contract LamportOptimized {
                     let j := add(i, 2)
                     let bit := and(shr(sub(255, j), bitsVal), 1)
                     mstore(memPtr, calldataload(add(0x24, mul(j, 32))))
-                    if iszero(eq(keccak256(memPtr, 32), calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32)))))) {
+                    if iszero(
+                        eq(
+                            keccak256(memPtr, 32),
+                            calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32))))
+                        )
+                    ) {
                         valid := 0
                         break
                     }
@@ -104,7 +123,12 @@ contract LamportOptimized {
                     let j := add(i, 3)
                     let bit := and(shr(sub(255, j), bitsVal), 1)
                     mstore(memPtr, calldataload(add(0x24, mul(j, 32))))
-                    if iszero(eq(keccak256(memPtr, 32), calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32)))))) {
+                    if iszero(
+                        eq(
+                            keccak256(memPtr, 32),
+                            calldataload(add(0x2024, add(mul(j, 64), mul(bit, 32))))
+                        )
+                    ) {
                         valid := 0
                         break
                     }
@@ -128,7 +152,9 @@ contract LamportOptimized {
         bytes32[256] calldata sig,
         bytes32[2][256] calldata pub
     ) external pure returns (bool valid) {
-        bits; sig; pub;
+        bits;
+        sig;
+        pub;
         assembly ("memory-safe") {
             let memPtr := mload(0x40)
             let bitsVal := calldataload(0x04)
@@ -155,9 +181,7 @@ contract LamportOptimized {
     /// @notice Compute PKH from public key
     /// @param pub 256x2 array of public key hashes
     /// @return pkh The keccak256 hash
-    function computePKH(
-        bytes32[2][256] calldata pub
-    ) external pure returns (bytes32 pkh) {
+    function computePKH(bytes32[2][256] calldata pub) external pure returns (bytes32 pkh) {
         return keccak256(abi.encodePacked(pub));
     }
 }
