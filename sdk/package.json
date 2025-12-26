@@ -1,0 +1,72 @@
+{
+  "name": "@luxfi/lamport",
+  "version": "1.0.0",
+  "description": "Lamport One-Time Signatures for Lux Network - Post-quantum secure signatures using only keccak256",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./abis": {
+      "import": "./abis/index.mjs",
+      "require": "./abis/index.js",
+      "types": "./abis/index.d.ts"
+    },
+    "./contracts": "./contracts/index.sol"
+  },
+  "files": [
+    "dist",
+    "abis",
+    "contracts",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "lamport",
+    "one-time-signature",
+    "ots",
+    "post-quantum",
+    "quantum-resistant",
+    "cryptography",
+    "lux",
+    "blockchain",
+    "safe",
+    "multisig",
+    "ethereum",
+    "solidity"
+  ],
+  "author": "Lux Network Team",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luxfi/lamport.git"
+  },
+  "homepage": "https://github.com/luxfi/lamport#readme",
+  "bugs": {
+    "url": "https://github.com/luxfi/lamport/issues"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "peerDependencies": {
+    "viem": ">=2.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
