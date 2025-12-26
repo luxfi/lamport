@@ -170,10 +170,12 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Hide duplicate logo in mobile subnav header - sidebar has the logo */
-/* The subnav shows a cropped duplicate on mobile viewports */
-header#nd-subnav > a[href="/"] {
-  display: none !important;
+/* Hide mobile subnav header on desktop - sidebar has all navigation */
+/* The subnav should only show on mobile but Tailwind md:hidden not working */
+@media (min-width: 768px) {
+  header#nd-subnav {
+    display: none !important;
+  }
 }
 
 /* TOC refinements */
