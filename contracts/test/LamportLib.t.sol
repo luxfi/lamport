@@ -60,7 +60,7 @@ contract LamportLibTest is Test {
             sig[i] = preimage0;
         }
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertTrue(valid, "Valid signature should verify");
     }
 
@@ -82,7 +82,7 @@ contract LamportLibTest is Test {
         // Corrupt one preimage
         sig[0] = abi.encodePacked(bytes32(uint256(999)));
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertFalse(valid, "Corrupted signature should not verify");
     }
 
@@ -102,7 +102,7 @@ contract LamportLibTest is Test {
             sig[i] = preimage1;
         }
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertFalse(valid, "Wrong bit preimage should not verify");
     }
 
@@ -122,7 +122,7 @@ contract LamportLibTest is Test {
             sig[i] = preimage1;
         }
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertTrue(valid, "All-ones message should verify");
     }
 
@@ -148,7 +148,7 @@ contract LamportLibTest is Test {
             sig[i] = bit == 0 ? preimage0 : preimage1;
         }
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertTrue(valid, "Mixed bits should verify");
     }
 
@@ -355,7 +355,7 @@ contract LamportLibTest is Test {
             sig[i] = bit == 0 ? preimage0 : preimage1;
         }
 
-        bool valid = LamportLib.verify_u256(bits, sig, pub);
+        bool valid = LamportLib.verify_u256_mem(bits, sig, pub);
         assertTrue(valid, "Fuzz: correctly constructed signature should always verify");
     }
 

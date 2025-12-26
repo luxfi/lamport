@@ -13,8 +13,8 @@ pragma solidity ^0.8.31;
 ///
 /// See: LP-4105 (Lamport OTS for Lux Safe)
 library LamportLib {
-    /// @notice Verify a Lamport signature (uint256 bits format)
-    /// @dev This is the most gas-efficient verification method
+    /// @notice Verify a Lamport signature (uint256 bits format, calldata)
+    /// @dev This is the most gas-efficient verification method for external calls
     /// @param bits The 256-bit message to verify (as uint256)
     /// @param sig Array of 256 preimages (the revealed private key halves)
     /// @param pub 256x2 array of public key hashes
@@ -31,6 +31,28 @@ library LamportLib {
                 uint256 bit = ((bits & (1 << (255 - i))) > 0) ? 1 : 0;
 
                 // Verify keccak256(sig[i]) == pub[i][bit]
+                if (keccak256(sig[i]) != pub[i][bit]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    /// @notice Verify a Lamport signature (uint256 bits format, memory)
+    /// @dev Memory version for internal use and testing
+    /// @param bits The 256-bit message to verify (as uint256)
+    /// @param sig Array of 256 preimages (the revealed private key halves)
+    /// @param pub 256x2 array of public key hashes
+    /// @return valid True if signature is valid
+    function verify_u256_mem(
+        uint256 bits,
+        bytes[256] memory sig,
+        bytes32[2][256] memory pub
+    ) internal pure returns (bool valid) {
+        unchecked {
+            for (uint256 i; i < 256; i++) {
+                uint256 bit = ((bits & (1 << (255 - i))) > 0) ? 1 : 0;
                 if (keccak256(sig[i]) != pub[i][bit]) {
                     return false;
                 }
