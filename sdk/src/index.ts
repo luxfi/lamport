@@ -28,8 +28,11 @@ export * from './abis'
 // Re-export types
 export * from './types'
 
-// Re-export threshold module
+// Re-export threshold module (true t-of-n Shamir-based)
 export * from './threshold'
+
+// Re-export coordinated module (n-of-n partitioned custody)
+export * from './coordinated'
 
 // ============================================================================
 // Types
