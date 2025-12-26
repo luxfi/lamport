@@ -22,11 +22,11 @@ library Lamport {
     /// @param sig Array of 256 preimages (32 bytes each)
     /// @param pub 256x2 array of public key hashes
     /// @return valid True if signature is valid
-    function verify(
-        uint256 bits,
-        bytes32[256] calldata sig,
-        bytes32[2][256] calldata pub
-    ) internal pure returns (bool valid) {
+    function verify(uint256 bits, bytes32[256] calldata sig, bytes32[2][256] calldata pub)
+        internal
+        pure
+        returns (bool valid)
+    {
         unchecked {
             for (uint256 i; i < 256; ++i) {
                 uint256 bit = (bits >> (255 - i)) & 1;
@@ -43,11 +43,11 @@ library Lamport {
     /// @param sig Array of 256 preimages (32 bytes each)
     /// @param pub 256x2 array of public key hashes
     /// @return valid True if signature is valid
-    function verifyMem(
-        uint256 bits,
-        bytes32[256] memory sig,
-        bytes32[2][256] memory pub
-    ) internal pure returns (bool valid) {
+    function verifyMem(uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub)
+        internal
+        pure
+        returns (bool valid)
+    {
         unchecked {
             for (uint256 i; i < 256; ++i) {
                 uint256 bit = (bits >> (255 - i)) & 1;
@@ -89,18 +89,18 @@ library Lamport {
     /// @notice Compute public key hash from public key array
     /// @param publicKey 256x2 array of bytes32
     /// @return pkh The keccak256 hash of the packed public key
-    function computePKH(
-        bytes32[2][256] memory publicKey
-    ) internal pure returns (bytes32 pkh) {
+    function computePKH(bytes32[2][256] memory publicKey) internal pure returns (bytes32 pkh) {
         return keccak256(abi.encodePacked(publicKey));
     }
 
     /// @notice Compute PKH from calldata (gas optimized)
     /// @param publicKey 256x2 array of bytes32
     /// @return pkh The keccak256 hash
-    function computePKHCalldata(
-        bytes32[2][256] calldata publicKey
-    ) internal pure returns (bytes32 pkh) {
+    function computePKHCalldata(bytes32[2][256] calldata publicKey)
+        internal
+        pure
+        returns (bytes32 pkh)
+    {
         return keccak256(abi.encodePacked(publicKey));
     }
 
@@ -115,18 +115,12 @@ library Lamport {
     /// @param module The module address
     /// @param chainId The chain ID
     /// @return m The domain-separated message (256 bits)
-    function computeMessage(
-        bytes32 txHash,
-        bytes32 nextPKH,
-        address module,
-        uint256 chainId
-    ) internal pure returns (uint256 m) {
-        return uint256(keccak256(abi.encodePacked(
-            txHash,
-            nextPKH,
-            module,
-            chainId
-        )));
+    function computeMessage(bytes32 txHash, bytes32 nextPKH, address module, uint256 chainId)
+        internal
+        pure
+        returns (uint256 m)
+    {
+        return uint256(keccak256(abi.encodePacked(txHash, nextPKH, module, chainId)));
     }
 
     // =========================================================================
@@ -179,11 +173,11 @@ contract LamportVerifier {
     /// @param sig Signature (256 preimages)
     /// @param pub Public key (must hash to stored PKH)
     /// @return valid True if valid
-    function verify(
-        uint256 bits,
-        bytes32[256] calldata sig,
-        bytes32[2][256] calldata pub
-    ) external view returns (bool valid) {
+    function verify(uint256 bits, bytes32[256] calldata sig, bytes32[2][256] calldata pub)
+        external
+        view
+        returns (bool valid)
+    {
         if (!initialized) revert NotInitialized();
         if (Lamport.computePKHCalldata(pub) != pkh) return false;
         return Lamport.verify(bits, sig, pub);
@@ -210,17 +204,12 @@ contract LamportVerifier {
     }
 
     /// @notice Compute PKH from public key
-    function computePKH(
-        bytes32[2][256] calldata pub
-    ) external pure returns (bytes32) {
+    function computePKH(bytes32[2][256] calldata pub) external pure returns (bytes32) {
         return Lamport.computePKHCalldata(pub);
     }
 
     /// @notice Compute domain-separated message
-    function computeMessage(
-        bytes32 txHash,
-        bytes32 nextPKH
-    ) external view returns (uint256) {
+    function computeMessage(bytes32 txHash, bytes32 nextPKH) external view returns (uint256) {
         return Lamport.computeMessage(txHash, nextPKH, address(this), block.chainid);
     }
 }
