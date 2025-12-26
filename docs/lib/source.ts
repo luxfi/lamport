@@ -92,8 +92,9 @@ export const source = {
         return a.data.title.localeCompare(b.data.title)
       })
 
+    // Return Root with empty name to hide folder header
     return {
-      name: 'Docs',
+      name: '',
       children: pages.map(p => ({
         type: 'page' as const,
         name: p.data.title,
