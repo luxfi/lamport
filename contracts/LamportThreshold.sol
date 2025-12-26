@@ -205,6 +205,13 @@ contract LamportThreshold {
 /// @dev For threshold setups, keys are pre-generated and registered
 contract LamportKeyChain {
     // =========================================================================
+    // Constants
+    // =========================================================================
+
+    /// @notice Maximum keys per chain (prevents gas griefing)
+    uint256 public constant MAX_CHAIN_SIZE = 1000;
+
+    // =========================================================================
     // Types
     // =========================================================================
 
@@ -243,6 +250,7 @@ contract LamportKeyChain {
     error PKHAlreadyUsed();
     error InvalidPKH();
     error EmptyKeyArray();
+    error ChainTooLarge();
 
     // =========================================================================
     // Registration
@@ -251,6 +259,7 @@ contract LamportKeyChain {
     /// @notice Register a new key chain
     function registerKeyChain(bytes32[] calldata pkhs) external returns (bytes32 chainId) {
         if (pkhs.length == 0) revert EmptyKeyArray();
+        if (pkhs.length > MAX_CHAIN_SIZE) revert ChainTooLarge();
 
         for (uint256 i = 0; i < pkhs.length; i++) {
             if (pkhs[i] == bytes32(0)) revert InvalidPKH();
