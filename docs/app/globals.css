@@ -170,12 +170,7 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Hide duplicate logo/title in sidebar and subnav header */
-/* Logo is shown in main top nav, don't need it repeated in sidebar or subnav */
-aside > div:first-child > div:first-child,
-header#nd-subnav a[href="/"] {
-  display: none !important;
-}
+/* Sidebar header styling handled by fumadocs defaults */
 
 /* TOC refinements */
 nav[aria-label="Table of Contents"] {
