@@ -170,9 +170,9 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Hide duplicate logo in top banner - sidebar header has the logo */
-/* The banner shows a cropped duplicate at certain viewport sizes */
-header[role="banner"] > a[href="/"] {
+/* Hide duplicate logo in mobile subnav header - sidebar has the logo */
+/* The subnav shows a cropped duplicate on mobile viewports */
+header#nd-subnav > a[href="/"] {
   display: none !important;
 }
 
