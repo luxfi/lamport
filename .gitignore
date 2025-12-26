@@ -1,6 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build artifacts
+out/
+cache/
+dist/
+
+# Foundry
+contracts/cache/
+contracts/out/
+foundry.lock
+
+# SDK build
+sdk/dist/
+sdk/node_modules/
 
 # AI assistant symlinks (keep only LLM.md)
 AGENTS.md
 CLAUDE.md
 GEMINI.md
 QWEN.md
+
+# OS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
