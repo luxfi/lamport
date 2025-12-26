@@ -7,6 +7,8 @@ package primitives
 //   - If bit i is 1, check keccak256(sig[i]) == pub[i][1]
 //
 // Returns true if all 256 preimages hash to the correct public key values.
+// NOTE: This function returns early on mismatch. For side-channel resistance,
+// use VerifyConstantTime instead.
 func Verify(pub *PublicKey, message [32]byte, sig *Signature) bool {
 	for i := 0; i < KeyBits; i++ {
 		bit := GetBit(message, i)
@@ -18,6 +20,30 @@ func Verify(pub *PublicKey, message [32]byte, sig *Signature) bool {
 		}
 	}
 	return true
+}
+
+// VerifyConstantTime checks a Lamport signature in constant time.
+// Unlike Verify, this function always checks all 256 preimages regardless
+// of mismatches, preventing timing side-channel attacks.
+//
+// Use this when the verification result could be observed by an attacker
+// (e.g., through timing analysis).
+func VerifyConstantTime(pub *PublicKey, message [32]byte, sig *Signature) bool {
+	var mismatch byte // Accumulate mismatches without branching
+
+	for i := 0; i < KeyBits; i++ {
+		bit := GetBit(message, i)
+		expectedHash := pub.Hashes[i][bit]
+		actualHash := Keccak256(sig.Preimages[i][:])
+
+		// XOR each byte and OR into mismatch accumulator
+		for j := 0; j < HashSize; j++ {
+			mismatch |= expectedHash[j] ^ actualHash[j]
+		}
+	}
+
+	// mismatch == 0 iff all hashes matched
+	return mismatch == 0
 }
 
 // VerifyBytes verifies a signature against message bytes.

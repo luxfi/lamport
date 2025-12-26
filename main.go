@@ -263,7 +263,7 @@ func cmdBenchmark() {
 
 	// Verify
 	kp, _ = primitives.GenerateKeyPair()
-	sig = primitives.SignUnsafe(kp.Private, message)
+	sig, _ = primitives.Sign(kp.Private, message)
 	start = time.Now()
 	for i := 0; i < iterations; i++ {
 		primitives.Verify(kp.Public, message, sig)

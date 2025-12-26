@@ -36,9 +36,9 @@ func SignBytes(priv *PrivateKey, message []byte) (*Signature, error) {
 	return Sign(priv, msg)
 }
 
-// SignUnsafe signs without marking the key as used.
-// WARNING: Only use this for testing or when you have external tracking.
-func SignUnsafe(priv *PrivateKey, message [32]byte) *Signature {
+// signUnsafe signs without marking the key as used.
+// INTERNAL: Only accessible within this package for testing.
+func signUnsafe(priv *PrivateKey, message [32]byte) *Signature {
 	sig := &Signature{}
 
 	for i := 0; i < KeyBits; i++ {
