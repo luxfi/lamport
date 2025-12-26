@@ -6,7 +6,10 @@ import {Lamport} from "./Lamport.sol";
 /// @title ISafe
 /// @notice Minimal Safe interface for module operations
 interface ISafe {
-    enum Operation { Call, DelegateCall }
+    enum Operation {
+        Call,
+        DelegateCall
+    }
 
     function execTransactionFromModule(
         address to,
@@ -144,15 +147,11 @@ contract LamportSafe {
         if (actualPKH != pkh) revert InvalidPKH();
 
         // 2. Compute safeTxHash ON-CHAIN (SECURITY CRITICAL)
-        bytes32 safeTxHash = ISafe(safe).getTransactionHash(
-            to, value, data, operation,
-            0, 0, 0, address(0), payable(0), nonce
-        );
+        bytes32 safeTxHash = ISafe(safe)
+            .getTransactionHash(to, value, data, operation, 0, 0, 0, address(0), payable(0), nonce);
 
         // 3. Domain-separated message
-        uint256 m = Lamport.computeMessage(
-            safeTxHash, nextPKH, address(this), block.chainid
-        );
+        uint256 m = Lamport.computeMessage(safeTxHash, nextPKH, address(this), block.chainid);
 
         // 4. Verify Lamport signature
         if (!Lamport.verify(m, sig, pub)) {
@@ -168,9 +167,7 @@ contract LamportSafe {
         emit Executed(safeTxHash, nonce - 1);
 
         // 6. Execute via Safe
-        success = ISafe(safe).execTransactionFromModule(
-            to, value, data, ISafe.Operation(operation)
-        );
+        success = ISafe(safe).execTransactionFromModule(to, value, data, ISafe.Operation(operation));
     }
 
     /// @notice Execute Call operation (convenience)
@@ -214,10 +211,8 @@ contract LamportSafe {
         uint8 operation,
         bytes32 nextPKH
     ) external view returns (uint256 m) {
-        bytes32 safeTxHash = ISafe(safe).getTransactionHash(
-            to, value, data, operation,
-            0, 0, 0, address(0), payable(0), nonce
-        );
+        bytes32 safeTxHash = ISafe(safe)
+            .getTransactionHash(to, value, data, operation, 0, 0, 0, address(0), payable(0), nonce);
         return Lamport.computeMessage(safeTxHash, nextPKH, address(this), block.chainid);
     }
 
@@ -225,11 +220,7 @@ contract LamportSafe {
     /// @return _pkh Current public key hash
     /// @return _nonce Current nonce
     /// @return _initialized Whether initialized
-    function getState() external view returns (
-        bytes32 _pkh,
-        uint256 _nonce,
-        bool _initialized
-    ) {
+    function getState() external view returns (bytes32 _pkh, uint256 _nonce, bool _initialized) {
         return (pkh, nonce, initialized);
     }
 }

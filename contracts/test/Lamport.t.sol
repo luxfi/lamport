@@ -232,7 +232,7 @@ contract LamportTest is Test {
         emit log_named_uint("Lamport.verifyMem gas", gasUsed);
         // Memory-based verification is ~1.2M gas (expected)
         // Calldata-based verify() would be ~450K gas
-        assertLt(gasUsed, 1500000);
+        assertLt(gasUsed, 1_500_000);
     }
 
     // =========================================================================
@@ -261,8 +261,7 @@ contract LamportOptimizedTest is Test {
     // =========================================================================
 
     function testVerify_Valid_AllZeros() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         assertTrue(verifier.verify(bits, sig, pub));
     }
 
@@ -273,8 +272,7 @@ contract LamportOptimizedTest is Test {
     }
 
     function testVerify_Invalid() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         sig[0] = bytes32(uint256(999));
         assertFalse(verifier.verify(bits, sig, pub));
     }
@@ -284,8 +282,7 @@ contract LamportOptimizedTest is Test {
     // =========================================================================
 
     function testUnrolled_Valid_AllZeros() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         assertTrue(verifier.verifyUnrolled(bits, sig, pub));
     }
 
@@ -297,14 +294,12 @@ contract LamportOptimizedTest is Test {
 
     function testUnrolled_Valid_Mixed() public view {
         uint256 bits = 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
         assertTrue(verifier.verifyUnrolled(bits, sig, pub));
     }
 
     function testUnrolled_Invalid() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         sig[128] = bytes32(uint256(999));
         assertFalse(verifier.verifyUnrolled(bits, sig, pub));
     }
@@ -314,8 +309,7 @@ contract LamportOptimizedTest is Test {
     // =========================================================================
 
     function testConstantTime_Valid_AllZeros() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         assertTrue(verifier.verifyConstantTime(bits, sig, pub));
     }
 
@@ -326,15 +320,13 @@ contract LamportOptimizedTest is Test {
     }
 
     function testConstantTime_Invalid_First() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         sig[0] = bytes32(uint256(999));
         assertFalse(verifier.verifyConstantTime(bits, sig, pub));
     }
 
     function testConstantTime_Invalid_Last() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         sig[255] = bytes32(uint256(999));
         assertFalse(verifier.verifyConstantTime(bits, sig, pub));
     }
@@ -345,8 +337,7 @@ contract LamportOptimizedTest is Test {
 
     function testConsistency_AllAgree() public view {
         uint256 bits = 0x123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0;
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
 
         assertTrue(verifier.verify(bits, sig, pub));
         assertTrue(verifier.verifyUnrolled(bits, sig, pub));
@@ -354,8 +345,7 @@ contract LamportOptimizedTest is Test {
     }
 
     function testConsistency_AllReject() public view {
-        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestData(0);
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestData(0);
         sig[100] = bytes32(uint256(999));
 
         assertFalse(verifier.verify(bits, sig, pub));
@@ -368,27 +358,23 @@ contract LamportOptimizedTest is Test {
     // =========================================================================
 
     function testFuzz_Verify(uint256 bits) public view {
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
         assertTrue(verifier.verify(bits, sig, pub));
     }
 
     function testFuzz_Unrolled(uint256 bits) public view {
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
         assertTrue(verifier.verifyUnrolled(bits, sig, pub));
     }
 
     function testFuzz_ConstantTime(uint256 bits) public view {
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
         assertTrue(verifier.verifyConstantTime(bits, sig, pub));
     }
 
     function testFuzz_AllConsistent(uint256 bits, uint8 corruptIdx) public view {
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
-        sig[corruptIdx] = bytes32(uint256(999999));
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
+        sig[corruptIdx] = bytes32(uint256(999_999));
 
         bool v1 = verifier.verify(bits, sig, pub);
         bool v2 = verifier.verifyUnrolled(bits, sig, pub);
@@ -405,8 +391,7 @@ contract LamportOptimizedTest is Test {
 
     function testGas_Comparison() public {
         uint256 bits = 0x123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0;
-        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
-            _generateTestDataWithBits(bits);
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) = _generateTestDataWithBits(bits);
 
         uint256 g1 = gasleft();
         verifier.verify(bits, sig, pub);
@@ -424,9 +409,9 @@ contract LamportOptimizedTest is Test {
         emit log_named_uint("verifyUnrolled", gasUnrolled);
         emit log_named_uint("verifyConstantTime", gasConstant);
 
-        assertLt(gasVerify, 500000);
-        assertLt(gasUnrolled, 500000);
-        assertLt(gasConstant, 500000);
+        assertLt(gasVerify, 500_000);
+        assertLt(gasUnrolled, 500_000);
+        assertLt(gasConstant, 500_000);
     }
 
     // =========================================================================
@@ -434,7 +419,7 @@ contract LamportOptimizedTest is Test {
     // =========================================================================
 
     function testComputePKH() public view {
-        (, , bytes32[2][256] memory pub) = _generateTestData(0);
+        (,, bytes32[2][256] memory pub) = _generateTestData(0);
         bytes32 pkh = verifier.computePKH(pub);
         assertTrue(pkh != bytes32(0));
     }
@@ -443,15 +428,19 @@ contract LamportOptimizedTest is Test {
     // Helpers
     // =========================================================================
 
-    function _generateTestData(uint256 bits) internal pure returns (
-        uint256, bytes32[256] memory sig, bytes32[2][256] memory pub
-    ) {
+    function _generateTestData(uint256 bits)
+        internal
+        pure
+        returns (uint256, bytes32[256] memory sig, bytes32[2][256] memory pub)
+    {
         return _generateTestDataWithBits(bits);
     }
 
-    function _generateTestDataWithBits(uint256 bits) internal pure returns (
-        uint256, bytes32[256] memory sig, bytes32[2][256] memory pub
-    ) {
+    function _generateTestDataWithBits(uint256 bits)
+        internal
+        pure
+        returns (uint256, bytes32[256] memory sig, bytes32[2][256] memory pub)
+    {
         for (uint256 i = 0; i < 256; i++) {
             bytes32 preimage0 = bytes32(uint256(i));
             bytes32 preimage1 = bytes32(uint256(i + 256));
