@@ -1,6 +1,6 @@
 {
   "name": "@luxfi/lamport",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Lamport One-Time Signatures for Lux Network - Post-quantum secure signatures using only keccak256",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -48,7 +48,7 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "https://github.com/luxfi/lamport.git"
+    "url": "git+https://github.com/luxfi/lamport.git"
   },
   "homepage": "https://github.com/luxfi/lamport#readme",
   "bugs": {
