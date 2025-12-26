@@ -25,11 +25,29 @@ export const metadata = {
   keywords: ['Lamport', 'one-time signatures', 'quantum-resistant', 'post-quantum', 'cryptography', 'Solidity', 'EVM', 'Lux Network'],
   authors: [{ name: 'Lux Network' }],
   metadataBase: new URL('https://lamport.lux.network'),
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: 'Lamport OTS - Quantum-Resistant Signatures',
     description: 'Production-ready Lamport One-Time Signatures for Solidity and Go. Quantum-resistant digital signatures using only hash functions.',
     type: 'website',
     siteName: 'Lamport OTS',
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'Lamport OTS - Quantum-Resistant Signatures for Lux Network',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lamport OTS - Quantum-Resistant Signatures',
+    description: 'Production-ready Lamport One-Time Signatures for Solidity and Go.',
+    images: ['/og.png'],
   },
 }
 
