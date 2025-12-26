@@ -170,6 +170,11 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
+/* Hide duplicate sidebar header (logo shown in top nav) */
+aside[role="complementary"] > div > div:first-child {
+  display: none !important;
+}
+
 /* TOC refinements */
 nav[aria-label="Table of Contents"] {
   border-left: 1px solid hsl(var(--border) / 0.3);
