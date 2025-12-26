@@ -170,7 +170,11 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Sidebar header styling handled by fumadocs defaults */
+/* Hide duplicate logo in top banner - sidebar header has the logo */
+/* The banner shows a cropped duplicate at certain viewport sizes */
+header[role="banner"] > a[href="/"] {
+  display: none !important;
+}
 
 /* TOC refinements */
 nav[aria-label="Table of Contents"] {
