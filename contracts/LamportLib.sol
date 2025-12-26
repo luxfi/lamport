@@ -14,7 +14,7 @@ pragma solidity ^0.8.31;
 /// See: LP-4105 (Lamport OTS for Lux Safe)
 library LamportLib {
     /// @notice Verify a Lamport signature (uint256 bits format, calldata)
-    /// @dev This is the most gas-efficient verification method for external calls
+    /// @dev Standard verification method for external calls
     /// @param bits The 256-bit message to verify (as uint256)
     /// @param sig Array of 256 preimages (the revealed private key halves)
     /// @param pub 256x2 array of public key hashes

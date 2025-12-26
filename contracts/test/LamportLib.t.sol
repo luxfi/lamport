@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import "../LamportLib.sol";
 import "../LamportTest.sol";
 import "../LamportBase.sol";
+import "../LamportOptimized.sol";
 
 /// @title LamportLibTest
 /// @notice Comprehensive Foundry tests for Lamport OTS
@@ -374,5 +375,296 @@ contract LamportLibTest is Test {
         // Modify one bit of signature - should fail
         signature[0] = privKey[0][1 - uint8(uint256(message) >> 255 & 1)];
         assertFalse(LamportLib.verify(message, signature, pubKey));
+    }
+}
+
+/// @title LamportOptimizedTest
+/// @notice Tests for assembly-optimized Lamport verification functions
+/// @dev Tests verifyFast, verifyUnrolled, verifyBranchless
+contract LamportOptimizedTest is Test {
+    // ═══════════════════════════════════════════════════════════════════════
+    // Optimized Verifier Contract
+    // ═══════════════════════════════════════════════════════════════════════
+
+    LamportOptimized public verifier;
+
+    function setUp() public {
+        verifier = new LamportOptimized();
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // verifyFast Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testFast_ValidSignature_AllZeros() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        bool valid = verifier.verifyFast(bits, sig, pub);
+        assertTrue(valid, "Fast: Valid all-zeros signature should verify");
+    }
+
+    function testFast_ValidSignature_AllOnes() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(type(uint256).max);
+
+        bool valid = verifier.verifyFast(bits, sig, pub);
+        assertTrue(valid, "Fast: Valid all-ones signature should verify");
+    }
+
+    function testFast_InvalidSignature() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Corrupt first preimage
+        sig[0] = bytes32(uint256(999));
+
+        bool valid = verifier.verifyFast(bits, sig, pub);
+        assertFalse(valid, "Fast: Corrupted signature should not verify");
+    }
+
+    function testFast_WrongBit() public view {
+        (, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Create signature for all ones but verify with all zeros
+        for (uint256 i = 0; i < 256; i++) {
+            sig[i] = bytes32(uint256(i + 256)); // Wrong preimages
+        }
+
+        bool valid = verifier.verifyFast(0, sig, pub);
+        assertFalse(valid, "Fast: Wrong bit preimage should not verify");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // verifyUnrolled Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testUnrolled_ValidSignature_AllZeros() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        bool valid = verifier.verifyUnrolled(bits, sig, pub);
+        assertTrue(valid, "Unrolled: Valid all-zeros signature should verify");
+    }
+
+    function testUnrolled_ValidSignature_AllOnes() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(type(uint256).max);
+
+        bool valid = verifier.verifyUnrolled(bits, sig, pub);
+        assertTrue(valid, "Unrolled: Valid all-ones signature should verify");
+    }
+
+    function testUnrolled_ValidSignature_MixedBits() public view {
+        // Alternating pattern: 0xAAAA...
+        uint256 bits = 0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA;
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        bool valid = verifier.verifyUnrolled(bits, sig, pub);
+        assertTrue(valid, "Unrolled: Valid mixed-bits signature should verify");
+    }
+
+    function testUnrolled_InvalidSignature() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Corrupt middle preimage (tests unrolling boundary)
+        sig[128] = bytes32(uint256(999));
+
+        bool valid = verifier.verifyUnrolled(bits, sig, pub);
+        assertFalse(valid, "Unrolled: Corrupted signature should not verify");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // verifyBranchless Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testBranchless_ValidSignature_AllZeros() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        bool valid = verifier.verifyBranchless(bits, sig, pub);
+        assertTrue(valid, "Branchless: Valid all-zeros signature should verify");
+    }
+
+    function testBranchless_ValidSignature_AllOnes() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(type(uint256).max);
+
+        bool valid = verifier.verifyBranchless(bits, sig, pub);
+        assertTrue(valid, "Branchless: Valid all-ones signature should verify");
+    }
+
+    function testBranchless_InvalidSignature_First() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Corrupt first preimage
+        sig[0] = bytes32(uint256(999));
+
+        bool valid = verifier.verifyBranchless(bits, sig, pub);
+        assertFalse(valid, "Branchless: First corrupted should not verify");
+    }
+
+    function testBranchless_InvalidSignature_Last() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Corrupt last preimage (branchless should still detect)
+        sig[255] = bytes32(uint256(999));
+
+        bool valid = verifier.verifyBranchless(bits, sig, pub);
+        assertFalse(valid, "Branchless: Last corrupted should not verify");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Cross-Method Consistency Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testConsistency_AllMethodsAgree() public view {
+        uint256 bits = 0x123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0;
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        bool fast = verifier.verifyFast(bits, sig, pub);
+        bool unrolled = verifier.verifyUnrolled(bits, sig, pub);
+        bool branchless = verifier.verifyBranchless(bits, sig, pub);
+
+        assertTrue(fast, "Fast should verify");
+        assertTrue(unrolled, "Unrolled should verify");
+        assertTrue(branchless, "Branchless should verify");
+
+        assertEq(fast, unrolled, "Fast and Unrolled should agree");
+        assertEq(unrolled, branchless, "Unrolled and Branchless should agree");
+    }
+
+    function testConsistency_AllMethodsRejectInvalid() public view {
+        (uint256 bits, bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestData(0);
+
+        // Corrupt signature
+        sig[100] = bytes32(uint256(999));
+
+        bool fast = verifier.verifyFast(bits, sig, pub);
+        bool unrolled = verifier.verifyUnrolled(bits, sig, pub);
+        bool branchless = verifier.verifyBranchless(bits, sig, pub);
+
+        assertFalse(fast, "Fast should reject");
+        assertFalse(unrolled, "Unrolled should reject");
+        assertFalse(branchless, "Branchless should reject");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Fuzz Tests for Optimized Functions
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testFuzz_Fast_ValidSignatures(uint256 bits) public view {
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        bool valid = verifier.verifyFast(bits, sig, pub);
+        assertTrue(valid, "Fuzz Fast: correctly constructed should verify");
+    }
+
+    function testFuzz_Unrolled_ValidSignatures(uint256 bits) public view {
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        bool valid = verifier.verifyUnrolled(bits, sig, pub);
+        assertTrue(valid, "Fuzz Unrolled: correctly constructed should verify");
+    }
+
+    function testFuzz_Branchless_ValidSignatures(uint256 bits) public view {
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        bool valid = verifier.verifyBranchless(bits, sig, pub);
+        assertTrue(valid, "Fuzz Branchless: correctly constructed should verify");
+    }
+
+    function testFuzz_AllMethodsConsistent(uint256 bits, uint8 corruptIdx) public view {
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        // Corrupt at fuzzed index
+        sig[corruptIdx] = bytes32(uint256(999999));
+
+        bool fast = verifier.verifyFast(bits, sig, pub);
+        bool unrolled = verifier.verifyUnrolled(bits, sig, pub);
+        bool branchless = verifier.verifyBranchless(bits, sig, pub);
+
+        // All methods should agree on rejection
+        assertEq(fast, unrolled, "Fast and Unrolled should agree on corrupted");
+        assertEq(unrolled, branchless, "Unrolled and Branchless should agree on corrupted");
+        assertFalse(fast, "All methods should reject corrupted signature");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Gas Comparison Tests
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function testGasComparison() public {
+        uint256 bits = 0x123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0;
+        (,bytes32[256] memory sig, bytes32[2][256] memory pub) =
+            _generateTestDataWithBits(bits);
+
+        // Measure fast
+        uint256 gasBefore = gasleft();
+        verifier.verifyFast(bits, sig, pub);
+        uint256 gasFast = gasBefore - gasleft();
+
+        // Measure unrolled
+        gasBefore = gasleft();
+        verifier.verifyUnrolled(bits, sig, pub);
+        uint256 gasUnrolled = gasBefore - gasleft();
+
+        // Measure branchless
+        gasBefore = gasleft();
+        verifier.verifyBranchless(bits, sig, pub);
+        uint256 gasBranchless = gasBefore - gasleft();
+
+        emit log_named_uint("Gas - verifyFast", gasFast);
+        emit log_named_uint("Gas - verifyUnrolled", gasUnrolled);
+        emit log_named_uint("Gas - verifyBranchless", gasBranchless);
+
+        // All should be under 500k gas
+        assertLt(gasFast, 500000, "Fast should use < 500k gas");
+        assertLt(gasUnrolled, 500000, "Unrolled should use < 500k gas");
+        assertLt(gasBranchless, 500000, "Branchless should use < 500k gas");
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // Test Data Generation Helpers
+    // ═══════════════════════════════════════════════════════════════════════
+
+    function _generateTestData(uint256 bits) internal pure returns (
+        uint256,
+        bytes32[256] memory sig,
+        bytes32[2][256] memory pub
+    ) {
+        return _generateTestDataWithBits(bits);
+    }
+
+    function _generateTestDataWithBits(uint256 bits) internal pure returns (
+        uint256,
+        bytes32[256] memory sig,
+        bytes32[2][256] memory pub
+    ) {
+        for (uint256 i = 0; i < 256; i++) {
+            // Generate preimages (32 bytes each)
+            bytes32 preimage0 = bytes32(uint256(i));
+            bytes32 preimage1 = bytes32(uint256(i + 256));
+
+            // Public key = hash of preimages
+            pub[i][0] = keccak256(abi.encodePacked(preimage0));
+            pub[i][1] = keccak256(abi.encodePacked(preimage1));
+
+            // Signature = preimage for the correct bit
+            uint256 bit = (bits >> (255 - i)) & 1;
+            sig[i] = bit == 0 ? preimage0 : preimage1;
+        }
+        return (bits, sig, pub);
     }
 }

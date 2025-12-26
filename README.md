@@ -155,10 +155,31 @@ module.execWithLamport(to, value, data, operation, sig, pub, nextPKH);
 
 | Contract | Description | Gas |
 |----------|-------------|-----|
-| `LamportLib.sol` | Core verification library | ~85k verify |
+| `LamportLib.sol` | Core verification library | ~280k verify |
+| `LamportOptimized.sol` | Assembly-optimized verifier | ~380k |
+| `LamportBase.sol` | Abstract base contract | - |
 | `LamportVerifier.sol` | Standalone verifier | ~90k |
 | `LamportModule.sol` | Safe module | ~150k exec |
 | `LamportKeyRegistry.sol` | Key chain management | ~50k register |
+
+### Optimized Verification
+
+Three assembly-optimized verification functions for different use cases:
+
+```solidity
+import {LamportOptimized} from "@luxfi/lamport/LamportOptimized.sol";
+
+LamportOptimized verifier = new LamportOptimized();
+
+// Fast verification with early exit (~390k gas)
+bool valid = verifier.verifyFast(bits, sig, pub);
+
+// 4x loop unrolling (~380k gas, lowest cost)
+bool valid = verifier.verifyUnrolled(bits, sig, pub);
+
+// Constant-time for side-channel resistance (~435k gas)
+bool valid = verifier.verifyBranchless(bits, sig, pub);
+```
 
 ## EVM Precompile
 
@@ -190,14 +211,28 @@ lamport/
 │   └── contract.go       # Precompile implementation
 ├── contracts/            # Solidity: Smart contracts
 │   ├── LamportLib.sol    # Core verification library
+│   ├── LamportOptimized.sol # Assembly-optimized verifier
+│   ├── LamportBase.sol   # Abstract base contract
+│   ├── LamportTest.sol   # Test helper contract
 │   ├── LamportVerifier.sol # Standalone verifier
 │   ├── LamportModule.sol # Safe module
 │   ├── ILamportModule.sol # Module interface
 │   ├── LamportKeyRegistry.sol # Key chain management
-│   ├── test/             # Foundry tests
+│   ├── test/             # Foundry tests (34 tests)
 │   └── foundry.toml      # Foundry config
 ├── docs/                 # Documentation
-│   └── whitepaper.md     # Threshold Lamport whitepaper
+│   ├── README.md         # Documentation index
+│   ├── overview.md       # What are Lamport signatures?
+│   ├── api.md            # API reference
+│   ├── security.md       # Security model
+│   ├── gas.md            # Gas optimization
+│   ├── integration.md    # Integration guide
+│   └── threshold.md      # Threshold signing
+├── paper/                # Academic whitepaper
+│   ├── lamport.tex       # LaTeX source
+│   └── Makefile          # Build automation
+├── .github/workflows/    # CI/CD
+│   └── ci.yml            # GitHub Actions
 ├── main.go               # CLI tool
 └── Makefile              # Build automation
 ```
