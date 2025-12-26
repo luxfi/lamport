@@ -81,6 +81,41 @@ func TestVerifyInvalidSignature(t *testing.T) {
 	}
 }
 
+func TestVerifyConstantTime(t *testing.T) {
+	kp, err := GenerateKeyPair()
+	if err != nil {
+		t.Fatalf("GenerateKeyPair failed: %v", err)
+	}
+
+	message := Keccak256([]byte("Constant time test"))
+	sig, _ := Sign(kp.Private, message)
+
+	// Valid signature should pass
+	if !VerifyConstantTime(kp.Public, message, sig) {
+		t.Error("Valid signature should pass constant-time verification")
+	}
+
+	// Generate new key for invalid test
+	kp2, _ := GenerateKeyPair()
+	sig2, _ := Sign(kp2.Private, message)
+
+	// Modify the signature
+	sig2.Preimages[0][0] ^= 0xFF
+
+	// Invalid signature should fail
+	if VerifyConstantTime(kp2.Public, message, sig2) {
+		t.Error("Invalid signature should fail constant-time verification")
+	}
+
+	// Compare results with regular Verify
+	kp3, _ := GenerateKeyPair()
+	sig3, _ := Sign(kp3.Private, message)
+
+	if Verify(kp3.Public, message, sig3) != VerifyConstantTime(kp3.Public, message, sig3) {
+		t.Error("VerifyConstantTime should match Verify for valid signatures")
+	}
+}
+
 func TestVerifyWrongMessage(t *testing.T) {
 	kp, err := GenerateKeyPair()
 	if err != nil {
@@ -310,7 +345,7 @@ func TestVerifyU256(t *testing.T) {
 	}
 
 	message := Keccak256([]byte("Test U256"))
-	sig := SignUnsafe(kp.Private, message)
+	sig := signUnsafe(kp.Private, message)
 
 	// Convert to U256 format
 	var sigArray [KeyBits][PreimageSize]byte
@@ -335,7 +370,7 @@ func TestToCalldata(t *testing.T) {
 	}
 
 	message := Keccak256([]byte("Calldata test"))
-	sig := SignUnsafe(kp.Private, message)
+	sig := signUnsafe(kp.Private, message)
 
 	// Test signature calldata
 	calldata := sig.ToCalldata()
@@ -373,7 +408,7 @@ func BenchmarkSign(b *testing.B) {
 func BenchmarkVerify(b *testing.B) {
 	kp, _ := GenerateKeyPair()
 	message := Keccak256([]byte("Benchmark"))
-	sig := SignUnsafe(kp.Private, message)
+	sig := signUnsafe(kp.Private, message)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		Verify(kp.Public, message, sig)
