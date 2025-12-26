@@ -1,0 +1,13 @@
+{
+  "title": "Lamport OTS",
+  "pages": [
+    "index",
+    "overview",
+    "integration",
+    "api",
+    "security",
+    "gas",
+    "threshold",
+    "whitepaper"
+  ]
+}
