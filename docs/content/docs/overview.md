@@ -104,6 +104,7 @@ Lamport signatures are ideal for:
 
 ## References
 
-- [Original Paper](https://www.microsoft.com/en-us/research/publication/constructing-digital-signatures-from-a-one-way-function/) - Lamport, 1979
-- [LP-4105](https://github.com/luxfi/lps) - Lamport OTS for Lux Safe
+- [Lamport Signature (Wikipedia)](https://en.wikipedia.org/wiki/Lamport_signature) - Overview and history
+- [Original Paper (Lamport, 1979)](https://lamport.azurewebsites.net/pubs/dig-sig.pdf) - "Constructing Digital Signatures from a One Way Function"
+- [LP-4105: Lamport OTS for Lux Safe](https://lps.lux.network/docs/lp-4105) - Full specification for Lux Network integration
 - [NIST PQC](https://csrc.nist.gov/projects/post-quantum-cryptography) - Post-Quantum Cryptography Standards
