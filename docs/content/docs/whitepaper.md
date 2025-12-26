@@ -1,3 +1,8 @@
+---
+title: Whitepaper
+description: Threshold Lamport Signatures via T-Chain MPC - A quantum-safe threshold signing protocol
+---
+
 # Threshold Lamport Signatures via T-Chain MPC
 
 **A Quantum-Safe Threshold Signing Protocol for Any EVM Chain**

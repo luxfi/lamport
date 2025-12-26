@@ -1,3 +1,8 @@
+---
+title: Gas Optimization
+description: Performance characteristics and gas costs
+---
+
 # Gas Optimization
 
 ## Benchmark Results

@@ -1,3 +1,8 @@
+---
+title: Integration Guide
+description: How to integrate Lamport OTS into your Solidity contracts and Go applications
+---
+
 # Integration Guide
 
 ## Installation

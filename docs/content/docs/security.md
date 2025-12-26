@@ -1,3 +1,8 @@
+---
+title: Security Model
+description: Threat model, guarantees, and security considerations
+---
+
 # Security Model
 
 ## Threat Model
