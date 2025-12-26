@@ -170,14 +170,9 @@ aside[role="complementary"] {
   border-right: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Hide duplicate sidebar header (logo shown in top nav) */
-aside > div > div:first-child {
+/* Hide duplicate sidebar logo/title (already shown in top nav) */
+aside > div:first-child > div:first-child > a[href="/"] {
   display: none !important;
-}
-
-/* Add top padding to sidebar content to compensate for hidden header */
-aside > div {
-  padding-top: 1rem !important;
 }
 
 /* TOC refinements */
