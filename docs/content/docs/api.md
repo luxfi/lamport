@@ -1,3 +1,8 @@
+---
+title: API Reference
+description: Contract interfaces and functions for Lamport OTS
+---
+
 # API Reference
 
 ## LamportLib

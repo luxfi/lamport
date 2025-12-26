@@ -1,0 +1,53 @@
+---
+title: Lamport OTS
+description: Quantum-resistant one-time signatures for Lux Network
+---
+
+# Lamport One-Time Signatures
+
+Quantum-resistant digital signatures using only hash functions. This library provides production-ready Lamport OTS for Solidity (EVM) and Go.
+
+## Features
+
+- **Quantum Resistant**: Security based on hash preimage resistance (Keccak256)
+- **EVM Compatible**: Works on any EVM chain without precompiles
+- **Gas Optimized**: Assembly-optimized verification (~100k gas)
+- **Threshold Support**: T-of-N signing via MPC coordination
+
+## Quick Start
+
+```bash
+# Install with Foundry
+forge install luxfi/lamport
+
+# Run tests
+cd contracts && forge test -vvv
+```
+
+## Documentation
+
+- [Overview](/docs/overview) - What are Lamport signatures and how do they work?
+- [API Reference](/docs/api) - Contract interfaces and function documentation
+- [Security Model](/docs/security) - Threat model, guarantees, and security considerations
+- [Gas Optimization](/docs/gas) - Performance characteristics and gas costs
+- [Integration Guide](/docs/integration) - How to use Lamport OTS in your project
+- [Threshold Signing](/docs/threshold) - MPC-based multi-party signatures
+- [Whitepaper](/docs/whitepaper) - Full technical specification and security analysis
+
+## Architecture
+
+```
+lamport/
+├── contracts/
+│   ├── LamportLib.sol       # Core verification library
+│   ├── LamportOptimized.sol # Assembly-optimized verifier
+│   ├── LamportBase.sol      # Abstract base contract
+│   └── LamportThreshold.sol # Threshold key management
+├── primitives/              # Go implementation
+├── threshold/               # MPC threshold signing
+└── docs/                    # This documentation
+```
+
+## License
+
+BSD-3-Clause
