@@ -12,6 +12,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         title: <LogoWithText size={24} />,
       }}
       sidebar={{
+        banner: null,
         defaultOpenLevel: 1,
         footer: (
           <div className="flex flex-col gap-2 p-4 text-xs border-t border-fd-border">
