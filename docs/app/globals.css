@@ -182,3 +182,34 @@ aside[role="complementary"] {
 nav[aria-label="Table of Contents"] {
   border-left: 1px solid hsl(var(--border) / 0.3);
 }
+
+/* Sidebar footer - theme toggle and social icons on same line */
+aside .border-t.p-4.pt-2 {
+  flex-direction: row !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Theme toggle div stays inline */
+aside .border-t.p-4.pt-2 > div:first-child {
+  flex-shrink: 0;
+}
+
+/* Our footer content - social icons inline, links below */
+aside .border-t.p-4.pt-2 > div:last-child {
+  display: contents;
+}
+
+/* Social icons row inline with theme toggle */
+aside .border-t.p-4.pt-2 > div:last-child > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Text links on new row, full width */
+aside .border-t.p-4.pt-2 > div:last-child > a {
+  width: 100%;
+  flex-basis: 100%;
+}
