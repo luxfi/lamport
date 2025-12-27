@@ -19,14 +19,19 @@ export function Logo({ size = 24, className = '' }: LogoProps) {
   )
 }
 
-export function LogoWithText({ size = 24 }: { size?: number }) {
+interface LogoWithTextProps {
+  size?: number
+  name?: string
+}
+
+export function LogoWithText({ size = 24, name = 'Docs' }: LogoWithTextProps) {
   return (
     <div className="flex items-center gap-2 group">
       <Logo
         size={size}
         className="transition-transform duration-200 group-hover:scale-110"
       />
-      <span className="font-bold text-lg">Lamport OTS</span>
+      <span className="font-bold text-lg">{name}</span>
     </div>
   )
 }

@@ -2,36 +2,28 @@
   "name": "@luxfi/lamport-docs",
   "version": "1.0.0",
   "private": true,
+  "description": "Lux Network documentation template - fork for any docs site",
   "scripts": {
     "dev": "next dev --port 3003",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "export": "next build && next export",
+    "generate:og": "node scripts/generate-og.js"
   },
   "dependencies": {
-    "@luxfi/logo": "^1.0.0",
-    "fumadocs-core": "^15.3.0",
-    "fumadocs-ui": "^15.3.0",
-    "gray-matter": "^4.0.3",
+    "@luxfi/logo": "^0.0.5",
+    "fumadocs-core": "^15.3.4",
+    "fumadocs-ui": "^15.3.4",
     "lucide-react": "^0.468.0",
-    "next": "15.3.0",
-    "next-themes": "^0.4.6",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-markdown": "^9.0.1",
-    "rehype-pretty-code": "^0.14.0",
-    "remark-gfm": "^4.0.0",
-    "shiki": "^1.24.0",
-    "tailwindcss": "^4.1.16"
+    "next": "^15.3.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.16",
-    "@types/node": "^22.10.2",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
-    "typescript": "^5.7.2"
-  },
-  "packageManager": "pnpm@10.12.4"
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.15.21",
+    "@types/react": "^19.1.5",
+    "tailwindcss": "^4.1.8",
+    "typescript": "^5.8.3"
+  }
 }

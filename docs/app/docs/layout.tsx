@@ -4,7 +4,9 @@ import { ExternalLink, Github } from 'lucide-react'
 import { Logo, LogoWithText } from '@/components/logo'
 import { source } from '@/lib/source'
 
-// Custom Discord icon
+// ============================================================================
+// CUSTOM ICONS - Discord, X (Twitter), Warpcast
+// ============================================================================
 function DiscordIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -13,7 +15,6 @@ function DiscordIcon({ className }: { className?: string }) {
   )
 }
 
-// Custom Warpcast (Farcaster) icon
 function WarpcastIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -22,7 +23,6 @@ function WarpcastIcon({ className }: { className?: string }) {
   )
 }
 
-// Custom X (Twitter) icon
 function XIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -31,12 +31,45 @@ function XIcon({ className }: { className?: string }) {
   )
 }
 
+// ============================================================================
+// CONFIGURE YOUR DOCS SITE HERE
+// ============================================================================
+const DOCS_CONFIG = {
+  // Site name shown in sidebar header
+  name: 'Lamport OTS',
+  
+  // GitHub repository URL
+  github: 'https://github.com/luxfi/lamport',
+  
+  // Social links
+  socials: {
+    website: 'https://lux.network',
+    discord: 'https://discord.gg/luxfi',
+    twitter: 'https://x.com/luxdefi',
+    warpcast: 'https://warpcast.com/luxfi',
+  },
+  
+  // Additional footer links
+  footerLinks: [
+    {
+      text: 'View on GitHub',
+      url: 'https://github.com/luxfi/lamport',
+      icon: 'github',
+    },
+    {
+      text: 'LP-4105 Specification',
+      url: 'https://lps.lux.network/docs/lp-4105',
+      icon: 'external',
+    },
+  ],
+}
+
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <DocsLayout
       tree={source.pageTree}
       nav={{
-        title: <LogoWithText size={24} />,
+        title: <LogoWithText size={24} name={DOCS_CONFIG.name} />,
       }}
       sidebar={{
         defaultOpenLevel: 1,
@@ -45,7 +78,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             {/* Social icons row */}
             <div className="flex items-center gap-3">
               <a
-                href="https://lux.network"
+                href={DOCS_CONFIG.socials.website}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"
@@ -54,7 +87,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <Logo size={20} />
               </a>
               <a
-                href="https://discord.gg/luxfi"
+                href={DOCS_CONFIG.socials.discord}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"
@@ -63,7 +96,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <DiscordIcon className="size-5" />
               </a>
               <a
-                href="https://x.com/luxdefi"
+                href={DOCS_CONFIG.socials.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"
@@ -72,7 +105,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <XIcon className="size-5" />
               </a>
               <a
-                href="https://warpcast.com/luxfi"
+                href={DOCS_CONFIG.socials.warpcast}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-fd-muted-foreground hover:text-fd-foreground transition-colors"
@@ -81,32 +114,30 @@ export default function Layout({ children }: { children: ReactNode }) {
                 <WarpcastIcon className="size-5" />
               </a>
             </div>
-            {/* Links */}
-            <a
-              href="https://github.com/luxfi/lamport"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-fd-muted-foreground hover:text-fd-foreground transition-colors"
-            >
-              <Github className="size-4" />
-              View on GitHub
-            </a>
-            <a
-              href="https://lps.lux.network/docs/lp-4105"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-fd-muted-foreground hover:text-fd-foreground transition-colors"
-            >
-              <ExternalLink className="size-4" />
-              LP-4105 Specification
-            </a>
+            {/* Footer links */}
+            {DOCS_CONFIG.footerLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-fd-muted-foreground hover:text-fd-foreground transition-colors"
+              >
+                {link.icon === 'github' ? (
+                  <Github className="size-4" />
+                ) : (
+                  <ExternalLink className="size-4" />
+                )}
+                {link.text}
+              </a>
+            ))}
           </div>
         ),
       }}
       links={[
         {
           text: 'GitHub',
-          url: 'https://github.com/luxfi/lamport',
+          url: DOCS_CONFIG.github,
           icon: <Github className="size-4" />,
           external: true,
         },
