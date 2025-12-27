@@ -321,6 +321,7 @@ message := computeThresholdMessage(safeTxHash, nextPKH, module, chainID)
 ## References
 
 - [LP-4105](https://lps.lux.network/docs/lp-4105) - Lamport OTS for Lux Safe
+- [LP-4106](https://lps.lux.network/docs/lp-4106) - Threshold Lamport Protocol (formal specification)
 - [Ringtail](https://eprint.iacr.org/2024/1113) - 2-round threshold lattice signatures
 - [Secure Multi-Party Computation](https://en.wikipedia.org/wiki/Secure_multi-party_computation)
 - [Gnosis Safe](https://github.com/safe-global/safe-smart-account) - Safe contracts
