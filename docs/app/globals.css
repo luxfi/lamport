@@ -183,7 +183,7 @@ nav[aria-label="Table of Contents"] {
   border-left: 1px solid hsl(var(--border) / 0.3);
 }
 
-/* Sidebar footer - theme toggle and social icons on same line */
+/* Sidebar footer - social icons left, theme toggle right */
 aside .border-t.p-4.pt-2 {
   flex-direction: row !important;
   flex-wrap: wrap;
@@ -191,9 +191,16 @@ aside .border-t.p-4.pt-2 {
   gap: 0.75rem;
 }
 
-/* Theme toggle div stays inline */
+/* Theme toggle div pushed to right */
 aside .border-t.p-4.pt-2 > div:first-child {
   flex-shrink: 0;
+  order: 1;
+  margin-left: auto;
+}
+
+/* Social icons come first (left side) */
+aside .border-t.p-4.pt-2 > div:last-child > div:first-child {
+  order: 0;
 }
 
 /* Our footer content - social icons inline, links below */
@@ -208,8 +215,9 @@ aside .border-t.p-4.pt-2 > div:last-child > div:first-child {
   gap: 0.75rem;
 }
 
-/* Text links on new row, full width */
+/* Text links on new row, full width, after theme toggle */
 aside .border-t.p-4.pt-2 > div:last-child > a {
   width: 100%;
   flex-basis: 100%;
+  order: 2;
 }
