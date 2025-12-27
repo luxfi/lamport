@@ -1,171 +1,253 @@
 ---
 title: Threshold Signing
-description: T-of-N threshold Lamport signatures using Multi-Party Computation (MPC)
+description: 2-round, no-reconstruction Lamport threshold protocol using additive MPC
 ---
 
 # Threshold Signing
 
 ## Overview
 
-Threshold Lamport signing combines Multi-Party Computation (MPC) with Lamport one-time signatures to enable:
+This protocol enables T-of-N threshold Lamport signatures with a critical security property:
 
-1. **Distributed Key Control**: T-of-N parties must cooperate to sign
-2. **Automatic Key Rotation**: Next key committed in each signature
-3. **On-Chain Simplicity**: Contract sees standard Lamport signature
+> **No node ever reconstructs a Lamport preimage.**
+
+Each Lamport secret emerges only as the sum of masked contributions in the final signature—never known to any individual party.
+
+## Non-Negotiable Goals
+
+| Requirement | Status |
+|-------------|--------|
+| No reconstruction | ✅ Additive masking |
+| 2 rounds | ✅ Commit + reveal |
+| No coordinator trust | ✅ Any ≥ t works |
+| Permissionless validators | ✅ Shares independent |
+| Public coordination | ✅ Chain = bulletin board |
+| Quantum safe | ✅ Hash only |
+| Lamport compatible | ✅ Standard verifier |
+
+## Core Insight
+
+Lamport preimages are produced as the **sum of independently masked contributions**, never reconstructed at any node.
+
+Each Lamport secret `sk[i][b]` is never known. Instead, the final preimage is:
+
+```
+sk[i][b] = r₁ + r₂ + … + rₜ   (mod 2²⁵⁶)
+```
+
+No participant ever knows the full value.
+
+This is the Lamport analogue of Ringtail's "masked share summation".
+
+## Protocol Specification
+
+### Setup (One-Time, Per Lamport Key)
+
+For each bit position `i ∈ [0..255]` and value `b ∈ {0,1}`:
+
+1. Each signer `j` samples a random 256-bit value:
+   ```
+   r[j][i][b] ← random()
+   ```
+
+2. Public key commitment is:
+   ```
+   PK[i][b] = keccak256( Σ r[j][i][b] )
+   ```
+
+3. Each signer stores only their own r-values.
+
+**Security guarantee**: No one ever knows:
+- The sum of all r-values
+- Another signer's values
+- Any full preimage
+
+This is information-theoretic security.
+
+### Round 1 — Public Commit (Message-Independent)
+
+Each signer posts only commitments, nothing secret:
+
+```
+Commit_j = H(
+  sessionId ||
+  H(all r[j][*][*]) ||
+  nonce_j
+)
+```
+
+This:
+- Freezes participation
+- Prevents equivocation
+- Matches Ringtail's offline round
+
+Public chain locks once ≥ t commits exist.
+
+### Round 2 — Masked Contribution (Message-Dependent)
+
+Now the message hash `m` is fixed.
+
+For each bit `i`:
+- Let `b = bit(m, i)`
+
+Each signer `j` sends only:
+
+```
+contribution[j][i] = r[j][i][b]
+```
+
+But:
+- Sent encrypted to the aggregation MPC
+- Or broadcast via pairwise MPC channels
+- Never published in plaintext
+
+Each contribution alone is random and useless.
+
+### Final Signature Formation (No Reconstruction)
+
+The Lamport signature element for bit `i` is computed as:
+
+```
+sig[i] = Σ contribution[j][i]   (mod 2²⁵⁶)
+```
+
+This summation is done:
+- Inside MPC, or
+- By streaming masked sums so no party sees all inputs
+
+⚠️ **At no point does any node know:**
+- All `r[j][i]` values
+- The final `sig[i]` before publication
+
+### Public Output (Only Preimage Exposure)
+
+The final Lamport signature is published:
+
+```
+Signature = [ sig[0], sig[1], ..., sig[255] ]
+```
+
+This is the first and only time any Lamport preimage appears.
+
+**Verification:**
+```
+keccak256(sig[i]) == PK[i][bit(m,i)]
+```
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    T-Chain (MPC Layer)                   │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
-│  │  Party 1  │  │  Party 2  │  │  Party 3  │  ...       │
-│  │ (share 1) │  │ (share 2) │  │ (share 3) │            │
-│  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘            │
-│        └──────────────┼──────────────┘                  │
-│                       ▼                                  │
-│              ┌─────────────────┐                        │
-│              │  Coordinator    │                        │
-│              │ (Aggregate)     │                        │
-│              └────────┬────────┘                        │
-│                       ▼                                  │
-│              ┌─────────────────┐                        │
-│              │ Lamport Signature│ ← Combined from shares│
-│              │   (8192 bytes)   │                        │
-│              └────────┬────────┘                        │
-└───────────────────────┼─────────────────────────────────┘
-                        ▼
-┌───────────────────────────────────────────────────────┐
-│                  C-Chain (EVM Layer)                   │
-│  ┌─────────────────────────────────────────────────┐  │
-│  │            LamportThreshold Contract             │  │
-│  │  ┌─────────────────┐  ┌───────────────────────┐ │  │
-│  │  │   Current PKH   │  │  Verify Signature     │ │  │
-│  │  │   (32 bytes)    │  │  Rotate to Next PKH   │ │  │
-│  │  └─────────────────┘  └───────────────────────┘ │  │
-│  └─────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    T-Chain (MPC Layer)                           │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                       │
+│  │  Party 1  │  │  Party 2  │  │  Party 3  │  ...               │
+│  │  r[1][*]  │  │  r[2][*]  │  │  r[3][*]  │                    │
+│  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘                    │
+│        │              │              │                           │
+│        ▼              ▼              ▼                           │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              Additive MPC Summation                      │    │
+│  │  sig[i] = Σ r[j][i][b]  (no party sees full sum)        │    │
+│  └─────────────────────────────┬───────────────────────────┘    │
+│                                 │                                │
+│                                 ▼                                │
+│                    ┌─────────────────────┐                      │
+│                    │  Lamport Signature   │                      │
+│                    │  (first appearance)  │                      │
+│                    └──────────┬──────────┘                      │
+└───────────────────────────────┼─────────────────────────────────┘
+                                ▼
+┌───────────────────────────────────────────────────────────────────┐
+│                      C-Chain (EVM Layer)                          │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                LamportThreshold Contract                     │ │
+│  │  ┌─────────────────┐  ┌────────────────────────────────┐    │ │
+│  │  │   Current PKH   │  │  Standard Lamport Verification  │    │ │
+│  │  │   (32 bytes)    │  │  keccak256(sig[i]) == PK[i][b]  │    │ │
+│  │  └─────────────────┘  └────────────────────────────────┘    │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+└───────────────────────────────────────────────────────────────────┘
 ```
+
+## Comparison with Ringtail
+
+| Ringtail | Lamport Threshold |
+|----------|-------------------|
+| LWE masked polynomials | Masked hash preimages |
+| No secret reconstruction | Additive mask summation |
+| 2 rounds | Commit + masked reveal |
+| Single lattice signature | Standard Lamport signature |
 
 ## Implementation
 
 ### Go Package Structure
 
-The `threshold` package provides complete MPC coordination:
-
 ```
 threshold/
 ├── config.go      # Configuration and types
-├── aggregate.go   # Signature aggregation
-└── partial.go     # Partial signature generation
+├── shares.go      # Random share generation
+├── commit.go      # Round 1: Commitment protocol
+├── contribute.go  # Round 2: Masked contributions
+├── mpc.go         # Additive MPC summation
+└── aggregate.go   # Final signature formation
 ```
 
-### Configuration
+### Share Generation
 
 ```go
 import "github.com/luxfi/lamport/threshold"
 
-// Create threshold config for 3-of-5 signing
-config, err := threshold.NewConfig(
-    3,                        // threshold (t)
-    5,                        // total parties (n)
-    "party-1",                // party ID
-    96369,                    // chain ID
-    moduleAddr,               // module address [20]byte
-)
-```
+// Each party generates their own random shares
+// No coordination needed - fully independent
+myShares := threshold.GenerateRandomShares(partyID)
 
-### Key Share Generation
-
-Uses additive secret sharing - sum of all shares equals the original preimage:
-
-```go
-// Generate 5 shares of a Lamport keypair
-shares, publicKey, err := threshold.GenerateShares(5)
-if err != nil {
-    panic(err)
-}
-
-// Each party receives one share
-party1Share := shares[0]
-party2Share := shares[1]
-// ...
-
-// Compute PKH for on-chain registration
-pkh := primitives.ComputePKH(publicKey)
+// Compute public key contribution
+// PK[i][b] = H(Σ r[j][i][b]) requires MPC ceremony
+pkContribution := threshold.ComputePKContribution(myShares)
 ```
 
 ### Signing Protocol
 
-The signing protocol has two phases to prevent equivocation attacks:
-
-**Phase 1: Digest Commitment**
-
 ```go
-// Each party broadcasts commitment BEFORE revealing signing material
-commitment := config.CreateDigestCommitment(safeTxHash)
+// Round 1: Commit
+commitment := threshold.CreateCommitment(sessionID, myShares, nonce)
+// Broadcast commitment to chain
 
-// Coordinator verifies all commitments match
-valid := threshold.VerifyDigestCommitment(commitment, safeTxHash)
+// Wait for ≥ t commitments...
+
+// Round 2: Contribute (message-dependent)
+message := computeThresholdMessage(safeTxHash, nextPKH, module, chainID)
+contribution := threshold.CreateContribution(myShares, message)
+// Send to MPC aggregation (encrypted)
+
+// Final signature emerges from MPC
+// No party ever sees full preimages
 ```
 
-**Phase 2: Partial Signature Generation**
+### MPC Summation
+
+The critical operation is additive MPC summation where no party learns the result:
 
 ```go
-// Each party generates partial signature from their share
-partial := threshold.GeneratePartial(share, message)
+// Each party holds contribution[j][i]
+// MPC computes sig[i] = Σ contribution[j][i]
+// Result published only as final signature
 
-// Coordinator collects t partials and aggregates
-signature, err := threshold.AggregateThreshold(
-    config,
-    partials,     // []*PartialSignature (at least t)
-    publicKey,
-    safeTxHash,
-    nextPKH,
-)
-```
-
-### Coordinator Workflow
-
-The `Coordinator` type manages the full signing protocol:
-
-```go
-// Create coordinator for this signing session
-coord := threshold.NewCoordinator(config, publicKey, safeTxHash, nextPKH)
-
-// Phase 1: Collect commitments
-for _, commitment := range commitments {
-    ready, err := coord.AddCommitment(commitment, safeTxHash)
-    if ready {
-        break // Have enough commitments
-    }
-}
-
-// Phase 2: Collect partials
-for _, partial := range partials {
-    signature, err := coord.AddPartial(partial)
-    if signature != nil {
-        // Complete! Submit signature on-chain
-        break
-    }
-}
+signature := mpc.SecureSum(contributions)
+// signature is now a valid Lamport signature
 ```
 
 ## On-Chain Contract
 
+The on-chain contract sees only a standard Lamport signature:
+
 ```solidity
 contract LamportThreshold {
     bytes32 public currentPKH;
-    uint256 public immutable maxChainSize;
-
-    constructor(uint256 _maxChainSize) {
-        require(_maxChainSize > 0 && _maxChainSize <= 1000, "Invalid max size");
-        maxChainSize = _maxChainSize;
-    }
 
     function executeWithRotation(
         bytes32 safeTxHash,
-        bytes32[] calldata sig,
+        bytes32[] calldata sig,        // Standard 256-element signature
         bytes32[2][256] calldata currentPub,
         bytes32[2][256] calldata nextPub
     ) external {
@@ -183,7 +265,7 @@ contract LamportThreshold {
             block.chainid
         );
 
-        // 3. Verify signature
+        // 3. Standard Lamport verification
         require(
             LamportLib.verify(bytes32(message), sig, currentPub),
             "Invalid signature"
@@ -199,107 +281,46 @@ contract LamportThreshold {
 
 ## Security Properties
 
-### Threshold Guarantees
+### Information-Theoretic Security
 
 | Property | Guarantee |
 |----------|-----------|
-| Signing | Requires T-of-N parties |
-| Key Recovery | Impossible with < T shares |
-| Quantum Resistance | Lamport provides PQ security |
+| Preimage secrecy | No party ever knows any full preimage |
+| Threshold security | < t parties learn nothing about signature |
+| Quantum resistance | Based only on hash function security |
+| No trusted dealer | Parties generate shares independently |
 
 ### Attack Mitigations
 
 | Attack | Mitigation |
 |--------|------------|
-| Equivocation | 1-round digest agreement with commitment broadcast |
-| Fake Hash | Each party computes safeTxHash locally |
-| Key Reuse | On-chain nonce + key rotation via nextPKH |
-| Cross-Chain Replay | chainId in domain separator |
-| Cross-Contract Replay | address(this) in domain separator |
+| Share reconstruction | Impossible - additive MPC only |
+| Coordinator attack | No coordinator has access to preimages |
+| Equivocation | Round 1 commitment freezes participation |
+| Key reuse | On-chain nonce + key rotation via nextPKH |
+| Cross-chain replay | chainId in domain separator |
+| Cross-contract replay | address(this) in domain separator |
 
-### Domain Separation
+## Key Rotation
 
-Every message includes full context:
+After each signature, the key is rotated:
 
-```go
-message := primitives.ComputeThresholdMessage(
-    safeTxHash,      // Transaction data
-    nextPKH,         // Next key commitment
-    moduleAddress,   // Module address
-    chainID,         // Chain ID
-)
-```
-
-## Types Reference
-
-### Share
+1. **During signing**: Next public key is committed in the message
+2. **New shares**: Each party generates fresh `r[j][i][b]` for next key
+3. **Atomic rotation**: Old key invalidated, new key activated on-chain
 
 ```go
-type Share struct {
-    PartyID        string
-    Index          int
-    PreimageShares [256][2][32]byte  // Shares for each bit position
-}
+// Generate next key shares (independent per party)
+nextShares := threshold.GenerateRandomShares(partyID)
+nextPKH := threshold.ComputePKHContribution(nextShares)
+
+// Include in signature message
+message := computeThresholdMessage(safeTxHash, nextPKH, module, chainID)
 ```
-
-### PartialSignature
-
-```go
-type PartialSignature struct {
-    PartyID          string
-    Index            int
-    PreimagePartials [256][32]byte  // Revealed partial preimages
-    BitMask          [32]byte       // Message hash (for verification)
-}
-```
-
-### DigestCommitment
-
-```go
-type DigestCommitment struct {
-    PartyID    string
-    Commitment [32]byte  // H(safeTxHash || partyID)
-}
-```
-
-## Error Handling
-
-```go
-var (
-    ErrInvalidThreshold = errors.New("threshold: invalid threshold (must be 1 <= t <= n)")
-    ErrNotEnoughParties = errors.New("threshold: not enough parties to meet threshold")
-    ErrDigestMismatch   = errors.New("threshold: digest mismatch - parties disagree on message")
-    ErrInvalidPartial   = errors.New("threshold: invalid partial signature failed verification")
-)
-```
-
-## Integration with Safe
-
-### Module Deployment
-
-```solidity
-// Deploy module with configurable chain size
-LamportThreshold module = new LamportThreshold(256);
-
-// Initialize with first PKH from threshold DKG
-module.initialize(initialPKH);
-
-// Enable module on Safe
-safe.enableModule(address(module));
-```
-
-### Transaction Flow
-
-1. **Propose**: User submits transaction to T-Chain coordinator
-2. **Commit**: Each party broadcasts H(safeTxHash || partyID)
-3. **Verify**: Wait for t commitments, verify all match
-4. **Partial**: Each party generates partial signature
-5. **Aggregate**: Coordinator combines t partials
-6. **Execute**: Submit signature to C-Chain module
-7. **Rotate**: Module updates to next PKH
 
 ## References
 
-- [LP-4105](https://github.com/luxfi/lps) - Lamport OTS for Lux Safe
-- [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)
+- [LP-4105](https://lps.lux.network/docs/lp-4105) - Lamport OTS for Lux Safe
+- [Ringtail](https://eprint.iacr.org/2024/1113) - 2-round threshold lattice signatures
+- [Secure Multi-Party Computation](https://en.wikipedia.org/wiki/Secure_multi-party_computation)
 - [Gnosis Safe](https://github.com/safe-global/safe-smart-account) - Safe contracts
