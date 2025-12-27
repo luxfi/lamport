@@ -16,37 +16,47 @@ const geistMono = Geist_Mono({
   display: 'swap',
 })
 
+// ============================================================================
+// CONFIGURE YOUR DOCS SITE HERE
+// ============================================================================
+const SITE_CONFIG = {
+  name: 'Lamport OTS',
+  description: 'Production-ready Lamport One-Time Signatures for Solidity and Go. Quantum-resistant digital signatures using only hash functions.',
+  url: 'https://lamport.lux.network',
+  keywords: ['Lamport', 'one-time signatures', 'quantum-resistant', 'post-quantum', 'cryptography', 'Solidity', 'EVM', 'Lux Network'],
+}
+
 export const metadata = {
   title: {
-    default: 'Lamport OTS - Quantum-Resistant Signatures',
-    template: '%s | Lamport OTS',
+    default: SITE_CONFIG.name,
+    template: `%s | ${SITE_CONFIG.name}`,
   },
-  description: 'Production-ready Lamport One-Time Signatures for Solidity and Go. Quantum-resistant digital signatures using only hash functions.',
-  keywords: ['Lamport', 'one-time signatures', 'quantum-resistant', 'post-quantum', 'cryptography', 'Solidity', 'EVM', 'Lux Network'],
+  description: SITE_CONFIG.description,
+  keywords: SITE_CONFIG.keywords,
   authors: [{ name: 'Lux Network' }],
-  metadataBase: new URL('https://lamport.lux.network'),
+  metadataBase: new URL(SITE_CONFIG.url),
   icons: {
     icon: '/favicon.svg',
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: 'Lamport OTS - Quantum-Resistant Signatures',
-    description: 'Production-ready Lamport One-Time Signatures for Solidity and Go. Quantum-resistant digital signatures using only hash functions.',
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
     type: 'website',
-    siteName: 'Lamport OTS',
+    siteName: SITE_CONFIG.name,
     images: [
       {
         url: '/og.png',
         width: 1200,
         height: 630,
-        alt: 'Lamport OTS - Quantum-Resistant Signatures for Lux Network',
+        alt: SITE_CONFIG.name,
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lamport OTS - Quantum-Resistant Signatures',
-    description: 'Production-ready Lamport One-Time Signatures for Solidity and Go.',
+    title: SITE_CONFIG.name,
+    description: SITE_CONFIG.description,
     images: ['/og.png'],
   },
 }
