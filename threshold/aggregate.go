@@ -9,7 +9,8 @@ import (
 // Aggregate combines partial signatures into a complete Lamport signature.
 //
 // For additive secret sharing:
-//   finalPreimage[i] = XOR(partial[0].preimage[i], partial[1].preimage[i], ...)
+//
+//	finalPreimage[i] = XOR(partial[0].preimage[i], partial[1].preimage[i], ...)
 //
 // SECURITY: All partials must be for the same message.
 func Aggregate(partials []*PartialSignature) (*primitives.Signature, error) {
