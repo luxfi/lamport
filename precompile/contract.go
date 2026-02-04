@@ -71,9 +71,10 @@ func (c *PrecompileContract) RequiredGas(input []byte) uint64 {
 // Run executes the Lamport verification precompile.
 //
 // Input format:
-//   [0:32]     - message (bytes32)
-//   [32:8224]  - signature (bytes[256], each element is 32 bytes)
-//   [8224:24608] - publicKey (bytes32[2][256])
+//
+//	[0:32]     - message (bytes32)
+//	[32:8224]  - signature (bytes[256], each element is 32 bytes)
+//	[8224:24608] - publicKey (bytes32[2][256])
 //
 // Returns:
 //   - 32 bytes: ABI-encoded bool (1 = valid, 0 = invalid)

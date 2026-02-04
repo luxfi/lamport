@@ -1,11 +1,12 @@
 // Lamport CLI - Post-Quantum One-Time Signatures
 //
 // Usage:
-//   lamport keygen                     Generate a new key pair
-//   lamport sign <key> <message>       Sign a message
-//   lamport verify <pub> <sig> <msg>   Verify a signature
-//   lamport chain <n>                  Generate a key chain of n keys
-//   lamport benchmark                  Run performance benchmarks
+//
+//	lamport keygen                     Generate a new key pair
+//	lamport sign <key> <message>       Sign a message
+//	lamport verify <pub> <sig> <msg>   Verify a signature
+//	lamport chain <n>                  Generate a key chain of n keys
+//	lamport benchmark                  Run performance benchmarks
 package main
 
 import (
