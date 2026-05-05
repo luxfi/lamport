@@ -95,7 +95,7 @@ This paper makes the following contributions:
 \begin{enumerate}[leftmargin=*]
     \item \textbf{Lamport.sol}: A pure Solidity library with calldata and memory verification variants
     \item \textbf{LamportOptimized.sol}: Assembly-optimized verifier achieving 164K gas (vs 1.2M for naive)
-    \item \textbf{LamportThreshold.sol}: Threshold signing module for T-Chain MPC integration
+    \item \textbf{LamportThreshold.sol}: Threshold signing module for M-Chain MPC integration (LP-134; "T-Chain MPC" was the pre-LP-134 name)
     \item \textbf{LamportSafe.sol}: Gnosis Safe module with atomic key rotation
     \item \textbf{TypeScript SDK}: Complete SDK with key generation, signing, and threshold coordination
     \item \textbf{Security analysis}: Formal proofs and comprehensive test coverage (41 tests)
@@ -378,7 +378,7 @@ Key observations:
 
 \subsection{Design Philosophy}
 
-Our threshold architecture follows a key principle: \textbf{threshold logic belongs off-chain}. The on-chain contract sees only a standard Lamport signature; the T-of-N coordination happens in the T-Chain MPC network.
+Our threshold architecture follows a key principle: \textbf{threshold logic belongs off-chain}. The on-chain contract sees only a standard Lamport signature; the T-of-N coordination happens in the M-Chain MPC network (LP-134; previously called "T-Chain MPC" before the LP-134 chain split).
 
 This design provides:
 \begin{enumerate}[leftmargin=*]

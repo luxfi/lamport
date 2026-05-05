@@ -1,8 +1,12 @@
 # Lamport OTS - AI Assistant Context
 
+> **Naming (LP-134):** MPC threshold custody for cross-chain assets lives on
+> **M-Chain**. References to "T-Chain MPC" below are historical — the current
+> chain providing MPC ceremonies is M-Chain.
+
 ## Overview
 
-This repository implements Lamport one-time signatures (OTS) with threshold MPC support for the Lux Network ecosystem. The key insight is that threshold control lives off-chain in the T-Chain MPC network, while on-chain verification is standard Lamport—working on ANY EVM chain.
+This repository implements Lamport one-time signatures (OTS) with threshold MPC support for the Lux Network ecosystem. The key insight is that threshold control lives off-chain in the M-Chain MPC network, while on-chain verification is standard Lamport—working on ANY EVM chain.
 
 ## Directory Structure
 
@@ -13,7 +17,7 @@ lamport/
 │   ├── sign.go          # Signing functions
 │   ├── verify.go        # Verification functions
 │   └── lamport_test.go  # Tests
-├── threshold/           # T-Chain MPC integration
+├── threshold/           # M-Chain MPC integration (LP-134)
 │   ├── config.go        # Threshold configuration
 │   ├── partial.go       # Partial signature generation
 │   └── aggregate.go     # Signature aggregation
@@ -34,7 +38,7 @@ lamport/
 - One-time: Each key can only sign ONE message
 
 ### Threshold Lamport via MPC
-- T-Chain MPC network holds shares of private key
+- M-Chain MPC network holds shares of private key (LP-134)
 - Each party reveals partial preimages
 - Aggregation: XOR partials to get final signature
 - On-chain: Standard Lamport verification (no precompile needed!)
