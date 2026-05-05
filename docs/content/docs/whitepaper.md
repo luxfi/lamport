@@ -1,15 +1,21 @@
 ---
 title: Whitepaper
-description: Threshold Lamport Signatures via T-Chain MPC - A quantum-safe threshold signing protocol
+description: Threshold Lamport Signatures via M-Chain MPC - A quantum-safe threshold signing protocol
 ---
 
-# Threshold Lamport Signatures via T-Chain MPC
+# Threshold Lamport Signatures via M-Chain MPC
 
 **A Quantum-Safe Threshold Signing Protocol for Any EVM Chain**
 
+> **Naming (LP-134):** MPC ceremonies for bridge custody of external wallets
+> live on **M-Chain**. The historical "T-Chain MPC" name has been superseded
+> by LP-134's chain topology — M-Chain is the canonical MPC ceremony chain.
+> The teleportvm "T-Chain" (LP-6332) is an unrelated cross-chain transport
+> layer.
+
 ## Abstract
 
-We present a novel approach to threshold Lamport one-time signatures (OTS) that enables quantum-resistant multi-party control of assets on any EVM-compatible blockchain. Our key insight is that the threshold property (t-of-n signing) can be enforced entirely off-chain by a dedicated MPC network (T-Chain), while on-chain verification remains a standard Lamport signature—requiring only keccak256 hash operations available on all EVM chains.
+We present a novel approach to threshold Lamport one-time signatures (OTS) that enables quantum-resistant multi-party control of assets on any EVM-compatible blockchain. Our key insight is that the threshold property (t-of-n signing) can be enforced entirely off-chain by a dedicated MPC network (M-Chain), while on-chain verification remains a standard Lamport signature—requiring only keccak256 hash operations available on all EVM chains.
 
 This design provides:
 - **Universal Compatibility**: Works on any EVM chain without precompiles
@@ -50,7 +56,7 @@ Our fundamental insight is to separate concerns:
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    THRESHOLD LAMPORT ARCHITECTURE                   │
 │                                                                     │
-│  T-Chain MPC Network                 │       Remote EVM Chain       │
+│  M-Chain MPC Network                 │       Remote EVM Chain       │
 │  ═══════════════════                 │       ════════════════       │
 │                                      │                              │
 │  ┌─────────────────────────┐         │    ┌──────────────────────┐  │
@@ -70,7 +76,7 @@ Our fundamental insight is to separate concerns:
 
 ### 2.2 System Components
 
-1. **T-Chain**: Lux's threshold MPC network
+1. **M-Chain** (LP-134; formerly "T-Chain MPC"): Lux's threshold MPC network
    - Holds shares of Lamport private keys
    - Coordinates threshold signing protocol
    - Aggregates partial signatures
@@ -84,11 +90,15 @@ Our fundamental insight is to separate concerns:
    - Each signature commits to the next PKH
    - Enables continuous operation
 
+Note: in this document the "T-Chain" component is **M-Chain** per LP-134;
+the original T-Chain naming predates the LP-134 chain split into
+M-Chain (MPC custody) and F-Chain (FHE compute).
+
 ## 3. Protocol Specification
 
 ### 3.1 Setup Phase (DKG)
 
-The T-Chain network runs distributed key generation:
+The M-Chain network runs distributed key generation:
 
 ```
 For each Lamport key pair (256 × 2 preimages):
@@ -263,13 +273,13 @@ Stateless hash-based signatures (NIST FIPS 205):
 
 ### 7.2 Safe Integration
 
-The `SafeThresholdLamportModule` enables any Safe to be controlled by T-Chain:
+The `SafeThresholdLamportModule` enables any Safe to be controlled by M-Chain:
 
 ```solidity
 // Deploy module
 SafeThresholdLamportModule module = new SafeThresholdLamportModule(safe);
 
-// Initialize with first PKH from T-Chain DKG
+// Initialize with first PKH from M-Chain DKG
 module.init(initialPkh);
 
 // Execute via threshold signature
@@ -278,7 +288,7 @@ module.execWithThresholdLamport(to, value, data, op, sig, pub, nextPkh);
 
 ## 8. Conclusion
 
-Threshold Lamport signatures via T-Chain MPC provide a practical path to quantum-resistant multi-party control on any EVM chain. By keeping threshold enforcement off-chain while using standard Lamport verification on-chain, we achieve universal compatibility without requiring precompile deployment.
+Threshold Lamport signatures via M-Chain MPC provide a practical path to quantum-resistant multi-party control on any EVM chain. By keeping threshold enforcement off-chain while using standard Lamport verification on-chain, we achieve universal compatibility without requiring precompile deployment.
 
 The protocol is simple, auditable, and relies only on the well-understood security of keccak256. As quantum computers advance, this approach provides a robust defense for high-value digital assets.
 

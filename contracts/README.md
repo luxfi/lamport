@@ -2,9 +2,13 @@
 
 Post-quantum secure Lamport one-time signatures for EVM chains.
 
+> **Naming (LP-134):** MPC threshold custody runs on **M-Chain**. References
+> below to "T-Chain MPC" reflect the pre-LP-134 chain naming and have been
+> updated to M-Chain throughout the body text.
+
 ## Overview
 
-These contracts provide quantum-resistant signature verification using only `keccak256` hash operations. The key insight is that threshold control lives off-chain (T-Chain MPC), while on-chain verification is standard Lamport—**works on ANY EVM chain without precompiles!**
+These contracts provide quantum-resistant signature verification using only `keccak256` hash operations. The key insight is that threshold control lives off-chain (M-Chain MPC), while on-chain verification is standard Lamport—**works on ANY EVM chain without precompiles!**
 
 ## Contracts
 
@@ -123,7 +127,7 @@ module.execWithLamport(
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    THRESHOLD LAMPORT ARCHITECTURE                   │
 │                                                                     │
-│  T-Chain MPC Network                    Remote EVM Chain           │
+│  M-Chain MPC Network                    Remote EVM Chain           │
 │  ┌─────────────────────────┐           ┌──────────────────────┐    │
 │  │  Threshold Control      │  Single   │  Standard Lamport    │    │
 │  │  (t-of-n signing)       │──Lamport──│  Verification        │    │

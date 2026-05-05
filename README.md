@@ -2,13 +2,18 @@
 
 Post-quantum secure one-time signatures using only hash functions.
 
+> **Naming (LP-134):** MPC ceremonies for cross-chain custody live on
+> **M-Chain**. The legacy "T-Chain MPC" label has been superseded — bridge
+> threshold control runs on M-Chain. The teleportvm "T-Chain" referenced
+> elsewhere in Lux (LP-6332) is unrelated to MPC custody.
+
 ## Overview
 
 Lamport signatures provide quantum resistance using only Keccak-256 hash operations.
 This implementation supports:
 
 - **Standard Lamport-256**: 256-bit message signing with one-time keys
-- **Threshold MPC Control**: T-Chain MPC jointly controls ONE Lamport key
+- **Threshold MPC Control**: M-Chain MPC jointly controls ONE Lamport key
 - **Key Chains**: Automatic key rotation for continuous operation
 - **EVM Precompile**: Gas-efficient on-chain verification
 
@@ -18,7 +23,7 @@ This implementation supports:
 ┌─────────────────────────────────────────────────────────────────────┐
 │                    THRESHOLD LAMPORT VIA MPC                        │
 │                                                                     │
-│  T-Chain MPC Network              │       Any EVM Chain             │
+│  M-Chain MPC Network              │       Any EVM Chain             │
 │  ┌─────────────────────────┐      │      ┌──────────────────────┐  │
 │  │  Threshold lives HERE   │      │      │  Standard Lamport    │  │
 │  │  (t-of-n signing)       │─────────────│  verification only   │  │
@@ -30,7 +35,7 @@ This implementation supports:
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-**Key insight**: Threshold control lives OFF-CHAIN in the T-Chain MPC network.
+**Key insight**: Threshold control lives OFF-CHAIN in the M-Chain MPC network.
 On-chain sees ONE standard Lamport signature - works on ANY EVM chain!
 
 ## Installation
@@ -90,7 +95,7 @@ chain.Advance()
 
 ## Threshold MPC Integration
 
-For T-Chain integration where threshold property is enforced off-chain:
+For M-Chain integration where threshold property is enforced off-chain:
 
 ```go
 import "github.com/luxfi/lamport/threshold"
@@ -203,7 +208,7 @@ lamport/
 │   ├── sign.go           # Signing functions
 │   ├── verify.go         # Verification functions
 │   └── lamport_test.go   # Comprehensive tests
-├── threshold/            # Go: T-Chain MPC integration
+├── threshold/            # Go: M-Chain MPC integration (LP-134)
 │   ├── config.go         # Threshold configuration
 │   ├── partial.go        # Partial signature generation
 │   └── aggregate.go      # Signature aggregation
