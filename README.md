@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="lamport" width="880"></p>
+
 # Lamport One-Time Signatures (OTS)
 
 Post-quantum secure one-time signatures using only hash functions.
