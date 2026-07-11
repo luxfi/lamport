@@ -12,7 +12,7 @@ env:
 jobs:
   solidity-tests:
     name: Solidity Tests
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     defaults:
       run:
         working-directory: contracts
@@ -46,7 +46,7 @@ jobs:
 
   go-tests:
     name: Go Tests
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
 
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     defaults:
       run:
         working-directory: contracts
@@ -85,7 +85,7 @@ jobs:
 
   security:
     name: Security Analysis
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     defaults:
       run:
         working-directory: contracts
@@ -115,7 +115,7 @@ jobs:
 
   gas-report:
     name: Gas Report
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     defaults:
       run:
         working-directory: contracts

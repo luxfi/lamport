@@ -8,7 +8,7 @@ on:
 jobs:
   publish-npm:
     name: Publish to npm
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     defaults:
       run:
         working-directory: sdk
@@ -40,7 +40,7 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: lux-build-amd64
     needs: publish-npm
     permissions:
       contents: write
