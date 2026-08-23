@@ -11,6 +11,7 @@
     "generate:og": "node scripts/generate-og.js"
   },
   "dependencies": {
+    "@hanzo/font": "^1.8.0",
     "@luxfi/logo": "^1.0.0",
     "fumadocs-core": "^15.3.4",
     "fumadocs-ui": "^15.3.4",

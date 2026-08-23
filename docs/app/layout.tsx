@@ -1,20 +1,9 @@
 import type { ReactNode } from 'react'
 import { RootProvider } from 'fumadocs-ui/provider'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { ZenMono } from '@hanzo/font/mono'
+import { ZenSans } from '@hanzo/font/sans'
 import 'fumadocs-ui/style.css'
 import './globals.css'
-
-const geist = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
 
 // ============================================================================
 // CONFIGURE YOUR DOCS SITE HERE
@@ -67,7 +56,7 @@ export default function RootLayout({
   children: ReactNode
 }) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${ZenSans.variable} ${ZenMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Prevent flash - respect system preference */}
         <script
