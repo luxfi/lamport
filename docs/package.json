@@ -11,7 +11,7 @@
     "generate:og": "node scripts/generate-og.js"
   },
   "dependencies": {
-    "@luxfi/logo": "^1.0.0",
+    "@luxfi/logo": "1.0.10",
     "fumadocs-core": "^15.3.4",
     "fumadocs-ui": "^15.3.4",
     "gray-matter": "^4.0.3",
