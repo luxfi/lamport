@@ -55,16 +55,16 @@
     "url": "https://github.com/luxfi/lamport/issues"
   },
   "dependencies": {
-    "viem": "^2.21.0"
+    "viem": "^2.56.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsup": "^8.3.0",
-    "typescript": "^5.7.0",
-    "vitest": "^2.1.0"
+    "@types/node": "26.4.0",
+    "tsup": "^8.5.1",
+    "typescript": "7.0.2",
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
-    "viem": ">=2.0.0"
+    "viem": ">=2"
   },
   "engines": {
     "node": ">=18"

@@ -1,6 +1,7 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import type { ReactNode } from 'react'
-import { ExternalLink, Github } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
+import { Github } from '@hanzo/ui/brands'
 import { Logo, LogoWithText } from '@/components/logo'
 import { source } from '@/lib/source'
 
